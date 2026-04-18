@@ -1,0 +1,22 @@
+{
+  "permissions": {
+    "allow": [
+      "Read(//usr/local/**)",
+      "Read(//Users/jaydprods/.nvm/versions/**)",
+      "Read(//opt/homebrew/**)",
+      "Bash(export PATH=\"/opt/homebrew/bin:$PATH:$HOME/.nvm/versions/node/$\\(ls ~/.nvm/versions/node/)",
+      "Bash(export PATH=\"/opt/homebrew/bin:/usr/local/bin:$PATH\")",
+      "Bash(npm -v)",
+      "Bash(npm install *)",
+      "Bash(npm run *)",
+      "Bash(curl -s http://localhost:5173)",
+      "Bash(git config *)",
+      "Bash(git init *)",
+      "Bash(git remote *)",
+      "Bash(git fetch *)",
+      "Bash(git checkout *)",
+      "Bash(git add *)",
+      "Bash(git commit *)"
+    ]
+  }
+}
