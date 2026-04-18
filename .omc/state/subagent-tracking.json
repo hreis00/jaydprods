@@ -1,0 +1,26 @@
+{
+  "agents": [
+    {
+      "agent_id": "ae37ae81bcead4724",
+      "agent_type": "Explore",
+      "started_at": "2026-04-18T16:32:13.119Z",
+      "parent_mode": "none",
+      "status": "completed",
+      "completed_at": "2026-04-18T16:32:28.127Z",
+      "duration_ms": 15008
+    },
+    {
+      "agent_id": "aebdc7b6ee57901bc",
+      "agent_type": "oh-my-claudecode:architect",
+      "started_at": "2026-04-18T16:32:41.434Z",
+      "parent_mode": "none",
+      "status": "completed",
+      "completed_at": "2026-04-18T16:33:32.728Z",
+      "duration_ms": 51294
+    }
+  ],
+  "total_spawned": 2,
+  "total_completed": 2,
+  "total_failed": 0,
+  "last_updated": "2026-04-18T16:41:14.132Z"
+}
