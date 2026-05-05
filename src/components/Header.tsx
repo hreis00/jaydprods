@@ -1,15 +1,17 @@
 import { useEffect, useState } from 'react'
+import { useNavigate } from 'react-router-dom'
 
 const navItems = [
-  { label: 'Welcome',  href: '#welcome'  },
-  { label: 'Work',     href: null        },
-  { label: 'Services', href: '#work'     },
-  { label: 'Contact',  href: '#contact'  },
+  { label: 'Welcome',  href: '#welcome',  route: null      },
+  { label: 'Work',     href: null,        route: '/work'   },
+  { label: 'Services', href: '#work',     route: null      },
+  { label: 'Contact',  href: null,        route: '/contact' },
 ]
 
 export default function Header() {
   const [active, setActive] = useState('welcome')
   const [scrolled, setScrolled] = useState(false)
+  const navigate = useNavigate()
 
   useEffect(() => {
     // Background sutil ao fazer scroll
@@ -85,15 +87,18 @@ export default function Header() {
 
       {/* Nav — lado direito */}
       <nav style={{ display: 'flex', alignItems: 'center', gap: '40px' }}>
-        {navItems.map(({ label, href }) => {
+        {navItems.map(({ label, href, route }) => {
           const id = href ? href.replace('#', '') : label.toLowerCase()
           const isActive = href ? active === id : false
 
           return (
             <a
               key={label}
-              href={href ?? undefined}
-              onClick={e => { e.preventDefault(); handleNav(href) }}
+              href={href ?? route ?? undefined}
+              onClick={e => {
+                e.preventDefault()
+                if (route) { navigate(route) } else { handleNav(href) }
+              }}
               style={{
                 position: 'relative',
                 fontFamily: "'Inter', sans-serif",
