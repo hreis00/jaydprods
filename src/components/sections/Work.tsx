@@ -1,5 +1,6 @@
 import { useState } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
+import { useIsMobile } from '../../hooks/useIsMobile'
 
 const services = [
   {
@@ -149,8 +150,9 @@ function ServiceCard({ title, category, thumb, description }: typeof services[0]
 }
 
 export default function Work() {
+  const isMobile = useIsMobile()
   return (
-    <section id="work" className="bg-black border-t border-zinc-900" style={{ padding: '96px 48px' }}>
+    <section id="work" className="bg-black border-t border-zinc-900" style={{ padding: isMobile ? '64px 20px' : '96px 48px' }}>
       <div style={{ maxWidth: '1200px', margin: '0 auto' }}>
 
         <div className="flex items-end justify-between mb-16">

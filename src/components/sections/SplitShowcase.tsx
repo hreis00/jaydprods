@@ -1,8 +1,10 @@
 import { useRef, useState } from 'react'
+import { useIsMobile } from '../../hooks/useIsMobile'
 
 export default function SplitShowcase() {
   const videoRef = useRef<HTMLVideoElement>(null)
   const [muted, setMuted] = useState(true)
+  const isMobile = useIsMobile()
 
   const toggleMute = () => {
     if (!videoRef.current) return
@@ -23,30 +25,24 @@ export default function SplitShowcase() {
       lineHeight: 0,
     }}>
 
-      {/* Wrapper com as dimensões exatas do vídeo 9:16 */}
+      {/* Wrapper do vídeo */}
       <div style={{
         position: 'relative',
-        maxHeight: '600px',
-        aspectRatio: '9 / 16',
         lineHeight: 0,
         flexShrink: 0,
+        ...(isMobile
+          ? { width: '100%', aspectRatio: '9 / 16' }
+          : { maxHeight: '600px', aspectRatio: '9 / 16' }
+        ),
       }}>
         <video
           ref={videoRef}
           src="/split_video_web.mp4"
-          style={{
-            width: '100%',
-            height: '100%',
-            display: 'block',
-            objectFit: 'cover',
-          }}
-          autoPlay
-          muted
-          loop
-          playsInline
+          style={{ width: '100%', height: '100%', display: 'block', objectFit: 'cover' }}
+          autoPlay muted loop playsInline
         />
 
-        {/* Botão mute/unmute — canto inferior direito do vídeo */}
+        {/* Botão mute/unmute */}
         <button
           onClick={toggleMute}
           title={muted ? 'Ativar som' : 'Desativar som'}
@@ -85,55 +81,99 @@ export default function SplitShowcase() {
             </svg>
           )}
         </button>
+
+        {/* Featured Work — mobile: overlay dentro do vídeo */}
+        {isMobile && (
+          <div style={{
+            position: 'absolute',
+            bottom: '64px',
+            left: '20px',
+            display: 'flex',
+            flexDirection: 'column',
+            alignItems: 'flex-start',
+            gap: '6px',
+            lineHeight: 1.2,
+          }}>
+            <span style={{
+              fontFamily: "'Inter', sans-serif",
+              fontWeight: 300,
+              fontSize: '8px',
+              letterSpacing: '0.4em',
+              textTransform: 'uppercase',
+              color: 'rgba(255,255,255,0.45)',
+            }}>
+              Featured Work
+            </span>
+            <div style={{ width: '28px', height: '1px', background: 'rgba(255,255,255,0.2)' }} />
+            <span style={{
+              fontFamily: "'Inter', sans-serif",
+              fontWeight: 300,
+              fontSize: '10px',
+              letterSpacing: '0.18em',
+              textTransform: 'uppercase',
+              color: 'rgba(255,255,255,0.8)',
+            }}>
+              Tiago Santos
+            </span>
+            <span style={{
+              fontFamily: "'Inter', sans-serif",
+              fontWeight: 300,
+              fontSize: '8px',
+              letterSpacing: '0.22em',
+              textTransform: 'uppercase',
+              color: 'rgba(255,255,255,0.4)',
+            }}>
+              Kickboxing World Champion
+            </span>
+          </div>
+        )}
       </div>
 
-      {/* Featured Work — área preta à direita do vídeo */}
-      <div style={{
-        position: 'absolute',
-        right: '48px',
-        bottom: '40px',
-        display: 'flex',
-        flexDirection: 'column',
-        alignItems: 'flex-end',
-        gap: '6px',
-        lineHeight: 1.2,
-      }}>
-        <span style={{
-          fontFamily: "'Inter', sans-serif",
-          fontWeight: 300,
-          fontSize: '8px',
-          letterSpacing: '0.4em',
-          textTransform: 'uppercase',
-          color: 'rgba(255,255,255,0.3)',
-        }}>
-          Featured Work
-        </span>
+      {/* Featured Work — desktop: absoluto à direita da secção */}
+      {!isMobile && (
         <div style={{
-          width: '28px',
-          height: '1px',
-          background: 'rgba(255,255,255,0.15)',
-        }} />
-        <span style={{
-          fontFamily: "'Inter', sans-serif",
-          fontWeight: 300,
-          fontSize: '10px',
-          letterSpacing: '0.18em',
-          textTransform: 'uppercase',
-          color: 'rgba(255,255,255,0.65)',
+          position: 'absolute',
+          right: '48px',
+          bottom: '40px',
+          display: 'flex',
+          flexDirection: 'column',
+          alignItems: 'flex-end',
+          gap: '6px',
+          lineHeight: 1.2,
         }}>
-          Tiago Santos
-        </span>
-        <span style={{
-          fontFamily: "'Inter', sans-serif",
-          fontWeight: 300,
-          fontSize: '8px',
-          letterSpacing: '0.22em',
-          textTransform: 'uppercase',
-          color: 'rgba(255,255,255,0.3)',
-        }}>
-          Kickboxing World Champion
-        </span>
-      </div>
+          <span style={{
+            fontFamily: "'Inter', sans-serif",
+            fontWeight: 300,
+            fontSize: '8px',
+            letterSpacing: '0.4em',
+            textTransform: 'uppercase',
+            color: 'rgba(255,255,255,0.3)',
+          }}>
+            Featured Work
+          </span>
+          <div style={{ width: '28px', height: '1px', background: 'rgba(255,255,255,0.15)' }} />
+          <span style={{
+            fontFamily: "'Inter', sans-serif",
+            fontWeight: 300,
+            fontSize: '10px',
+            letterSpacing: '0.18em',
+            textTransform: 'uppercase',
+            color: 'rgba(255,255,255,0.65)',
+          }}>
+            Tiago Santos
+          </span>
+          <span style={{
+            fontFamily: "'Inter', sans-serif",
+            fontWeight: 300,
+            fontSize: '8px',
+            letterSpacing: '0.22em',
+            textTransform: 'uppercase',
+            color: 'rgba(255,255,255,0.3)',
+          }}>
+            Kickboxing World Champion
+          </span>
+        </div>
+      )}
 
     </section>
   )
