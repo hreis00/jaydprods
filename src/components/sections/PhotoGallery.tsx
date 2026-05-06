@@ -14,6 +14,12 @@ function Lightbox({ startIndex, onClose }: { startIndex: number, onClose: () => 
   const [current, setCurrent] = useState(startIndex)
   const total = photos.length
 
+  // Bloqueia scroll do body enquanto lightbox está aberto
+  useEffect(() => {
+    document.body.style.overflow = 'hidden'
+    return () => { document.body.style.overflow = '' }
+  }, [])
+
   useEffect(() => {
     const handler = (e: KeyboardEvent) => {
       if (e.key === 'ArrowLeft')  setCurrent(c => (c - 1 + total) % total)
