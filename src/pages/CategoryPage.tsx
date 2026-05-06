@@ -2,11 +2,13 @@ import { useState, useEffect, useRef } from 'react'
 import { useParams, useNavigate } from 'react-router-dom'
 import { motion, AnimatePresence } from 'framer-motion'
 import { categories, clients, Project, Video } from '../data/work'
+import { useIsMobile } from '../hooks/useIsMobile'
 
 // ─── LIGHTBOX ─────────────────────────────────────────────────────────────────
 function Lightbox({ photos, index, onClose }: { photos: string[], index: number, onClose: () => void }) {
   const [current, setCurrent] = useState(index)
   const total = photos.length
+  const isMobile = useIsMobile()
 
   const prev = (e: React.MouseEvent) => { e.stopPropagation(); setCurrent(c => (c - 1 + total) % total) }
   const next = (e: React.MouseEvent) => { e.stopPropagation(); setCurrent(c => (c + 1) % total) }
@@ -24,8 +26,10 @@ function Lightbox({ photos, index, onClose }: { photos: string[], index: number,
   const arrowStyle: React.CSSProperties = {
     position: 'fixed', top: '50%', transform: 'translateY(-50%)',
     background: 'none', border: '1px solid rgba(255,255,255,0.15)', borderRadius: '50%',
-    width: '44px', height: '44px', display: 'flex', alignItems: 'center', justifyContent: 'center',
-    color: 'rgba(255,255,255,0.6)', fontSize: '18px', cursor: 'pointer',
+    width: isMobile ? '36px' : '44px',
+    height: isMobile ? '36px' : '44px',
+    display: 'flex', alignItems: 'center', justifyContent: 'center',
+    color: 'rgba(255,255,255,0.6)', fontSize: '16px', cursor: 'pointer',
     transition: 'border-color 0.2s, color 0.2s', zIndex: 1001,
   }
 
@@ -34,7 +38,13 @@ function Lightbox({ photos, index, onClose }: { photos: string[], index: number,
       initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}
       transition={{ duration: 0.25 }}
       onClick={onClose}
-      style={{ position: 'fixed', inset: 0, zIndex: 1000, background: 'rgba(0,0,0,0.92)', display: 'flex', alignItems: 'center', justifyContent: 'center', padding: '80px', cursor: 'zoom-out' }}
+      style={{
+        position: 'fixed', inset: 0, zIndex: 1000,
+        background: 'rgba(0,0,0,0.92)',
+        display: 'flex', alignItems: 'center', justifyContent: 'center',
+        padding: isMobile ? '16px' : '80px',
+        cursor: 'zoom-out',
+      }}
     >
       <AnimatePresence mode="wait">
         <motion.img
@@ -50,12 +60,12 @@ function Lightbox({ photos, index, onClose }: { photos: string[], index: number,
 
       {total > 1 && (
         <>
-          <button onClick={prev} style={{ ...arrowStyle, left: '24px' }}
+          <button onClick={prev} style={{ ...arrowStyle, left: isMobile ? '8px' : '24px' }}
             onMouseEnter={e => { e.currentTarget.style.borderColor = '#fff'; e.currentTarget.style.color = '#fff' }}
             onMouseLeave={e => { e.currentTarget.style.borderColor = 'rgba(255,255,255,0.15)'; e.currentTarget.style.color = 'rgba(255,255,255,0.6)' }}>
             ←
           </button>
-          <button onClick={next} style={{ ...arrowStyle, right: '24px' }}
+          <button onClick={next} style={{ ...arrowStyle, right: isMobile ? '8px' : '24px' }}
             onMouseEnter={e => { e.currentTarget.style.borderColor = '#fff'; e.currentTarget.style.color = '#fff' }}
             onMouseLeave={e => { e.currentTarget.style.borderColor = 'rgba(255,255,255,0.15)'; e.currentTarget.style.color = 'rgba(255,255,255,0.6)' }}>
             →
@@ -74,7 +84,9 @@ function PhotoViewer({ photos }: { photos: string[] }) {
   const [direction, setDirection] = useState(1)
   const [paused, setPaused]       = useState(false)
   const [lightboxIndex, setLightboxIndex] = useState<number | null>(null)
-  const total = photos.length
+  const total    = photos.length
+  const isMobile = useIsMobile()
+  const height   = isMobile ? 220 : 340
 
   const go = (dir: number) => {
     setDirection(dir)
@@ -108,8 +120,7 @@ function PhotoViewer({ photos }: { photos: string[] }) {
         onMouseEnter={() => setPaused(true)}
         onMouseLeave={() => setPaused(false)}
       >
-        {/* Carrossel 3 fotos — desliza 1 por 1 */}
-        <div style={{ position: 'relative', height: '340px', overflow: 'hidden' }}>
+        <div style={{ position: 'relative', height: `${height}px`, overflow: 'hidden' }}>
           <AnimatePresence mode="sync" custom={direction} initial={false}>
             <motion.div
               key={center}
@@ -136,7 +147,7 @@ function PhotoViewer({ photos }: { photos: string[] }) {
                     animate={{ opacity: isCenter ? 1 : 0.22 }}
                     transition={{ duration: 0.45 }}
                     onClick={handleClick}
-                    style={{ height: '340px', overflow: 'hidden', cursor: isCenter ? 'zoom-in' : 'pointer', background: '#000' }}
+                    style={{ height: `${height}px`, overflow: 'hidden', cursor: isCenter ? 'zoom-in' : 'pointer', background: '#000' }}
                   >
                     <img
                       src={photos[photoIdx]}
@@ -151,7 +162,6 @@ function PhotoViewer({ photos }: { photos: string[] }) {
           </AnimatePresence>
         </div>
 
-        {/* Navegação */}
         {total > 1 && (
           <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', paddingTop: '4px' }}>
             <button
@@ -248,7 +258,7 @@ function VideoEmbed({ title, type, src, portrait, thumb }: Video) {
     ? `https://play.gumlet.io/embed/${src}?background=false&autoplay=false&loop=false&disable_player_controls=false`
     : null
 
-  // ── Modo capa: imagem horizontal → abre lightbox ──
+  // Modo capa: thumbnail → abre lightbox
   if (thumb) {
     return (
       <>
@@ -264,9 +274,7 @@ function VideoEmbed({ title, type, src, portrait, thumb }: Video) {
             style={{ position: 'absolute', inset: 0, width: '100%', height: '100%', objectFit: 'cover', transition: 'transform 0.6s ease' }}
             className="group-hover:scale-[1.03]"
           />
-          {/* overlay escuro */}
           <div style={{ position: 'absolute', inset: 0, background: 'rgba(0,0,0,0.35)', transition: 'background 0.3s' }} className="group-hover:bg-black/55" />
-          {/* botão play */}
           <div style={{ position: 'absolute', inset: 0, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
             <div
               style={{ width: '44px', height: '44px', border: '1px solid rgba(255,255,255,0.5)', borderRadius: '50%', display: 'flex', alignItems: 'center', justifyContent: 'center', transition: 'border-color 0.3s, transform 0.3s' }}
@@ -286,7 +294,7 @@ function VideoEmbed({ title, type, src, portrait, thumb }: Video) {
     )
   }
 
-  // ── Modo inline (sem capa) ──
+  // Modo inline (sem capa)
   const ratio = portrait ? '9/16' : '16/9'
   return (
     <div
@@ -335,11 +343,12 @@ function ProjectBlock({ title, description, videos = [], photos = [], process = 
   const hasVideo    = !!mainVideo
   const hasPhotos   = photos.length > 0
   const hasProcess  = process.length > 0
+  const isMobile    = useIsMobile()
 
   return (
-    <div style={{ display: 'flex', flexDirection: 'column', gap: '88px', padding: '40px 0' }}>
+    <div style={{ display: 'flex', flexDirection: 'column', gap: isMobile ? '48px' : '88px', padding: '40px 0' }}>
 
-      {/* ── TÍTULO — pequeno e subtil ── */}
+      {/* Título */}
       <div style={{ display: 'flex', alignItems: 'center', gap: '14px' }}>
         <div style={{ width: '20px', height: '1px', background: 'rgba(255,255,255,0.18)', flexShrink: 0 }} />
         <span style={{ fontFamily: "'Inter', sans-serif", fontSize: '11px', letterSpacing: '0.35em', textTransform: 'uppercase', color: 'rgba(255,255,255,0.35)' }}>
@@ -348,7 +357,7 @@ function ProjectBlock({ title, description, videos = [], photos = [], process = 
         <div style={{ flex: 1, height: '1px', background: 'rgba(255,255,255,0.06)' }} />
       </div>
 
-      {/* ── VÍDEO + CONCEITO ── */}
+      {/* Vídeo + Conceito */}
       {(hasVideo || description) && (() => {
         const hasCover = hasVideo && mainVideo.thumb
         return hasCover ? (
@@ -356,13 +365,18 @@ function ProjectBlock({ title, description, videos = [], photos = [], process = 
             <span style={{ fontFamily: "'Inter', sans-serif", fontSize: '11px', letterSpacing: '0.35em', textTransform: 'uppercase', color: 'rgba(255,255,255,0.35)' }}>Short Film</span>
             <VideoEmbed {...mainVideo} />
             {description && (
-              <p style={{ fontFamily: "'Inter', sans-serif", fontWeight: 300, fontSize: '18px', lineHeight: 1.85, color: 'rgba(255,255,255,0.55)', margin: 0, marginTop: '46px', textAlign: 'center' }}>
+              <p style={{ fontFamily: "'Inter', sans-serif", fontWeight: 300, fontSize: isMobile ? '16px' : '18px', lineHeight: 1.85, color: 'rgba(255,255,255,0.55)', margin: 0, marginTop: '46px', textAlign: 'center' }}>
                 {description}
               </p>
             )}
           </div>
         ) : (
-          <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '48px', alignItems: 'center' }}>
+          <div style={{
+            display: 'grid',
+            gridTemplateColumns: isMobile ? '1fr' : '1fr 1fr',
+            gap: isMobile ? '32px' : '48px',
+            alignItems: 'center',
+          }}>
             {hasVideo && (
               <div style={{ display: 'flex', flexDirection: 'column', gap: '10px' }}>
                 <span style={{ fontFamily: "'Inter', sans-serif", fontSize: '11px', letterSpacing: '0.35em', textTransform: 'uppercase', color: 'rgba(255,255,255,0.35)' }}>Short Film</span>
@@ -372,7 +386,7 @@ function ProjectBlock({ title, description, videos = [], photos = [], process = 
             {description && (
               <div style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
                 <span style={{ fontFamily: "'Inter', sans-serif", fontSize: '8px', letterSpacing: '0.4em', textTransform: 'uppercase', color: 'rgba(255,255,255,0.2)' }}>Concept</span>
-                <p style={{ fontFamily: "'Inter', sans-serif", fontWeight: 300, fontSize: '18px', lineHeight: 1.85, color: 'rgba(255,255,255,0.55)', margin: 0 }}>
+                <p style={{ fontFamily: "'Inter', sans-serif", fontWeight: 300, fontSize: isMobile ? '16px' : '18px', lineHeight: 1.85, color: 'rgba(255,255,255,0.55)', margin: 0 }}>
                   {description}
                 </p>
               </div>
@@ -381,7 +395,7 @@ function ProjectBlock({ title, description, videos = [], photos = [], process = 
         )
       })()}
 
-      {/* ── GALERIA ── */}
+      {/* Galeria */}
       {hasPhotos && (
         <div style={{ display: 'flex', flexDirection: 'column', gap: '14px' }}>
           <span style={{ fontFamily: "'Inter', sans-serif", fontSize: '11px', letterSpacing: '0.35em', textTransform: 'uppercase', color: 'rgba(255,255,255,0.35)' }}>Photography</span>
@@ -389,29 +403,24 @@ function ProjectBlock({ title, description, videos = [], photos = [], process = 
         </div>
       )}
 
-      {/* ── MORE VIDEOS ── */}
+      {/* More Videos */}
       {extraVideos.length > 0 && (
         <div style={{ display: 'flex', flexDirection: 'column', gap: '14px' }}>
           <span style={{ fontFamily: "'Inter', sans-serif", fontSize: '11px', letterSpacing: '0.35em', textTransform: 'uppercase', color: 'rgba(255,255,255,0.35)' }}>More Videos</span>
-          <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: '3px' }}>
+          <div style={{ display: 'grid', gridTemplateColumns: isMobile ? 'repeat(2, 1fr)' : 'repeat(3, 1fr)', gap: '3px' }}>
             {extraVideos.map(v => <VideoEmbed key={v.id} {...v} />)}
           </div>
         </div>
       )}
 
-      {/* ── PROCESSO ── */}
+      {/* Processo */}
       {hasProcess && (
         <div style={{ display: 'flex', flexDirection: 'column', gap: '14px' }}>
           <span style={{ fontFamily: "'Inter', sans-serif", fontSize: '11px', letterSpacing: '0.35em', textTransform: 'uppercase', color: 'rgba(255,255,255,0.35)' }}>Process</span>
           <div style={{ display: 'flex', flexDirection: 'column', gap: '4px', alignItems: 'center' }}>
             {process.map((src, i) => (
-              <div key={i} style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '12px', width: '80%' }}>
-                <img
-                  src={src}
-                  alt="Process"
-                  draggable={false}
-                  style={{ width: '100%', height: 'auto', display: 'block', borderRadius: '2px' }}
-                />
+              <div key={i} style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '12px', width: isMobile ? '100%' : '80%' }}>
+                <img src={src} alt="Process" draggable={false} style={{ width: '100%', height: 'auto', display: 'block', borderRadius: '2px' }} />
                 <span style={{ fontFamily: "'Inter', sans-serif", fontSize: '11px', letterSpacing: '0.35em', textTransform: 'uppercase', color: 'rgba(255,255,255,0.35)' }}>Timeline screenshot</span>
               </div>
             ))}
@@ -479,6 +488,7 @@ function ClientRow({ name, projects = [] }: { name: string, projects: Project[] 
 export default function CategoryPage() {
   const { category } = useParams()
   const navigate = useNavigate()
+  const isMobile = useIsMobile()
 
   const cat = categories.find(c => c.id === category)
   const catClients = clients[category ?? ''] ?? []
@@ -489,9 +499,23 @@ export default function CategoryPage() {
     </div>
   )
 
+  const sidePad = isMobile ? '20px' : '48px'
+
   return (
-    <div style={{ background: '#000', minHeight: '100vh', paddingLeft: '48px', paddingRight: 'calc(48px + (100vw - 100%))', paddingBottom: '100px' }}>
-      <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', height: '72px', borderBottom: '1px solid rgba(255,255,255,0.06)', marginBottom: '72px' }}>
+    <div style={{
+      background: '#000',
+      minHeight: '100vh',
+      paddingLeft: sidePad,
+      paddingRight: isMobile ? sidePad : 'calc(48px + (100vw - 100%))',
+      paddingBottom: '100px',
+    }}>
+      {/* Header */}
+      <div style={{
+        display: 'flex', alignItems: 'center', justifyContent: 'space-between',
+        height: '72px',
+        borderBottom: '1px solid rgba(255,255,255,0.06)',
+        marginBottom: isMobile ? '40px' : '72px',
+      }}>
         <button onClick={() => navigate('/')} style={{ background: 'none', border: 'none', cursor: 'pointer', padding: 0 }}>
           <img src="/logo-header.png" alt="JAYD Prods" style={{ height: '16px', width: 'auto' }} draggable={false} />
         </button>

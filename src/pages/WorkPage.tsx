@@ -1,5 +1,6 @@
 import { useNavigate } from 'react-router-dom'
 import { categories } from '../data/work'
+import { useIsMobile } from '../hooks/useIsMobile'
 
 function CategoryCard({ id, label, cover, objectPosition }: typeof categories[0]) {
   const navigate = useNavigate()
@@ -9,7 +10,6 @@ function CategoryCard({ id, label, cover, objectPosition }: typeof categories[0]
       onClick={() => navigate(`/work/${id}`)}
       style={{ cursor: 'pointer', display: 'flex', flexDirection: 'column', gap: '14px' }}
     >
-      {/* Capa */}
       <div
         className="group"
         style={{ position: 'relative', width: '100%', aspectRatio: '16/9', overflow: 'hidden', background: '#0a0a0a' }}
@@ -26,7 +26,6 @@ function CategoryCard({ id, label, cover, objectPosition }: typeof categories[0]
           }}
           className="group-hover:scale-[1.04]"
         />
-        {/* Overlay */}
         <div style={{
           position: 'absolute', inset: 0,
           background: 'rgba(0,0,0,0.35)',
@@ -34,7 +33,6 @@ function CategoryCard({ id, label, cover, objectPosition }: typeof categories[0]
         }}
           className="group-hover:bg-black/55"
         />
-        {/* Label centrado */}
         <div style={{
           position: 'absolute', inset: 0,
           display: 'flex', alignItems: 'center', justifyContent: 'center',
@@ -56,10 +54,11 @@ function CategoryCard({ id, label, cover, objectPosition }: typeof categories[0]
 }
 
 export default function WorkPage() {
-  const navigate = useNavigate()
+  const navigate  = useNavigate()
+  const isMobile  = useIsMobile()
 
   return (
-    <div style={{ background: '#000', minHeight: '100vh', padding: '0 48px 100px' }}>
+    <div style={{ background: '#000', minHeight: '100vh', padding: isMobile ? '0 20px 80px' : '0 48px 100px' }}>
 
       {/* Header */}
       <div style={{
@@ -68,7 +67,7 @@ export default function WorkPage() {
         justifyContent: 'space-between',
         height: '72px',
         borderBottom: '1px solid rgba(255,255,255,0.06)',
-        marginBottom: '72px',
+        marginBottom: isMobile ? '40px' : '72px',
       }}>
         <button onClick={() => navigate('/')} style={{ background: 'none', border: 'none', cursor: 'pointer', padding: 0 }}>
           <img src="/logo-header.png" alt="JAYD Prods" style={{ height: '16px', width: 'auto' }} draggable={false} />
@@ -86,7 +85,11 @@ export default function WorkPage() {
 
       {/* Grelha de categorias */}
       <div style={{ maxWidth: '1200px', margin: '0 auto' }}>
-        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(2, 1fr)', gap: '24px' }}>
+        <div style={{
+          display: 'grid',
+          gridTemplateColumns: isMobile ? '1fr' : 'repeat(2, 1fr)',
+          gap: isMobile ? '16px' : '24px',
+        }}>
           {categories.map(c => <CategoryCard key={c.id} {...c} />)}
         </div>
       </div>
