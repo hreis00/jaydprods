@@ -3,6 +3,7 @@ import { useParams, useNavigate } from 'react-router-dom'
 import { motion, AnimatePresence } from 'framer-motion'
 import { categories, clients, Project, Video } from '../data/work'
 import { useIsMobile } from '../hooks/useIsMobile'
+import { useScrollLock } from '../hooks/useScrollLock'
 
 // ─── LIGHTBOX ─────────────────────────────────────────────────────────────────
 function Lightbox({ photos, index, onClose }: { photos: string[], index: number, onClose: () => void }) {
@@ -13,11 +14,7 @@ function Lightbox({ photos, index, onClose }: { photos: string[], index: number,
   const prev = (e: React.MouseEvent) => { e.stopPropagation(); setCurrent(c => (c - 1 + total) % total) }
   const next = (e: React.MouseEvent) => { e.stopPropagation(); setCurrent(c => (c + 1) % total) }
 
-  // Bloqueia scroll do body enquanto lightbox está aberto
-  useEffect(() => {
-    document.body.style.overflow = 'hidden'
-    return () => { document.body.style.overflow = '' }
-  }, [])
+  useScrollLock()
 
   useEffect(() => {
     const handler = (e: KeyboardEvent) => {
@@ -236,11 +233,7 @@ function PhotoViewer({ photos }: { photos: string[] }) {
 function VideoLightbox({ title, type, src, portrait, onClose }: Omit<Video, 'id' | 'thumb'> & { onClose: () => void }) {
   const [loaded, setLoaded] = useState(false)
 
-  // Bloqueia scroll do body enquanto lightbox está aberto
-  useEffect(() => {
-    document.body.style.overflow = 'hidden'
-    return () => { document.body.style.overflow = '' }
-  }, [])
+  useScrollLock()
 
   const embedUrl = type === 'youtube'
     ? `https://www.youtube.com/embed/${src}?rel=0&modestbranding=1&color=white&autoplay=1`

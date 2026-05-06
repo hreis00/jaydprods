@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react'
 import { motion, AnimatePresence } from 'framer-motion'
 import { useIsMobile } from '../../hooks/useIsMobile'
+import { useScrollLock } from '../../hooks/useScrollLock'
 
 const photos = [
   '/slideshow/4.jpg',
@@ -14,11 +15,7 @@ function Lightbox({ startIndex, onClose }: { startIndex: number, onClose: () => 
   const [current, setCurrent] = useState(startIndex)
   const total = photos.length
 
-  // Bloqueia scroll do body enquanto lightbox está aberto
-  useEffect(() => {
-    document.body.style.overflow = 'hidden'
-    return () => { document.body.style.overflow = '' }
-  }, [])
+  useScrollLock()
 
   useEffect(() => {
     const handler = (e: KeyboardEvent) => {
