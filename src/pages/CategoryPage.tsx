@@ -163,12 +163,25 @@ function PhotoViewer({ photos }: { photos: string[] }) {
         </div>
 
         {total > 1 && (
-          <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', paddingTop: '4px' }}>
+          <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', paddingTop: '8px' }}>
             <button
               onClick={() => go(-1)}
-              style={{ background: 'none', border: 'none', color: 'rgba(255,255,255,0.3)', cursor: 'pointer', padding: '0 4px', fontSize: '14px', transition: 'color 0.2s' }}
+              style={{
+                background: 'none',
+                border: isMobile ? '1px solid rgba(255,255,255,0.25)' : 'none',
+                borderRadius: isMobile ? '50%' : '0',
+                color: isMobile ? 'rgba(255,255,255,0.8)' : 'rgba(255,255,255,0.3)',
+                cursor: 'pointer',
+                width: isMobile ? '40px' : 'auto',
+                height: isMobile ? '40px' : 'auto',
+                padding: isMobile ? '0' : '0 4px',
+                fontSize: isMobile ? '18px' : '14px',
+                display: 'flex', alignItems: 'center', justifyContent: 'center',
+                transition: 'color 0.2s, border-color 0.2s',
+                flexShrink: 0,
+              }}
               onMouseEnter={e => (e.currentTarget.style.color = '#fff')}
-              onMouseLeave={e => (e.currentTarget.style.color = 'rgba(255,255,255,0.3)')}
+              onMouseLeave={e => (e.currentTarget.style.color = isMobile ? 'rgba(255,255,255,0.8)' : 'rgba(255,255,255,0.3)')}
             >←</button>
 
             <div style={{ display: 'flex', gap: '5px', alignItems: 'center' }}>
@@ -183,9 +196,22 @@ function PhotoViewer({ photos }: { photos: string[] }) {
 
             <button
               onClick={() => go(1)}
-              style={{ background: 'none', border: 'none', color: 'rgba(255,255,255,0.3)', cursor: 'pointer', padding: '0 4px', fontSize: '14px', transition: 'color 0.2s' }}
+              style={{
+                background: 'none',
+                border: isMobile ? '1px solid rgba(255,255,255,0.25)' : 'none',
+                borderRadius: isMobile ? '50%' : '0',
+                color: isMobile ? 'rgba(255,255,255,0.8)' : 'rgba(255,255,255,0.3)',
+                cursor: 'pointer',
+                width: isMobile ? '40px' : 'auto',
+                height: isMobile ? '40px' : 'auto',
+                padding: isMobile ? '0' : '0 4px',
+                fontSize: isMobile ? '18px' : '14px',
+                display: 'flex', alignItems: 'center', justifyContent: 'center',
+                transition: 'color 0.2s, border-color 0.2s',
+                flexShrink: 0,
+              }}
               onMouseEnter={e => (e.currentTarget.style.color = '#fff')}
-              onMouseLeave={e => (e.currentTarget.style.color = 'rgba(255,255,255,0.3)')}
+              onMouseLeave={e => (e.currentTarget.style.color = isMobile ? 'rgba(255,255,255,0.8)' : 'rgba(255,255,255,0.3)')}
             >→</button>
           </div>
         )}
