@@ -13,6 +13,12 @@ function Lightbox({ photos, index, onClose }: { photos: string[], index: number,
   const prev = (e: React.MouseEvent) => { e.stopPropagation(); setCurrent(c => (c - 1 + total) % total) }
   const next = (e: React.MouseEvent) => { e.stopPropagation(); setCurrent(c => (c + 1) % total) }
 
+  // Bloqueia scroll do body enquanto lightbox está aberto
+  useEffect(() => {
+    document.body.style.overflow = 'hidden'
+    return () => { document.body.style.overflow = '' }
+  }, [])
+
   useEffect(() => {
     const handler = (e: KeyboardEvent) => {
       if (e.key === 'ArrowLeft') setCurrent(c => (c - 1 + total) % total)
@@ -229,6 +235,12 @@ function PhotoViewer({ photos }: { photos: string[] }) {
 // ─── VIDEO LIGHTBOX ───────────────────────────────────────────────────────────
 function VideoLightbox({ title, type, src, portrait, onClose }: Omit<Video, 'id' | 'thumb'> & { onClose: () => void }) {
   const [loaded, setLoaded] = useState(false)
+
+  // Bloqueia scroll do body enquanto lightbox está aberto
+  useEffect(() => {
+    document.body.style.overflow = 'hidden'
+    return () => { document.body.style.overflow = '' }
+  }, [])
 
   const embedUrl = type === 'youtube'
     ? `https://www.youtube.com/embed/${src}?rel=0&modestbranding=1&color=white&autoplay=1`
